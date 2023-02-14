@@ -45,6 +45,7 @@ export default function Auth() {
   const onSocialClick = () => {
     let provider = new GoogleAuthProvider();
     signInWithPopup(authService, provider);
+    localStorage.setItem("userObject", JSON.stringify(provider));
   };
   return (
     <div>

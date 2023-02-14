@@ -11,6 +11,15 @@ function App() {
     authService.onAuthStateChanged((user) => {
       if (user) {
         setIsLoggedIn(true);
+        if (user.displayName === null) {
+          const name = user.email.split("@")[0];
+          user.displayName = name;
+        }
+        let userObject = {
+          name: user.displayName,
+          email: user.email,
+        };
+        localStorage.setItem("userObject", JSON.stringify(userObject));
       } else {
         setIsLoggedIn(false);
       }
