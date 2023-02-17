@@ -1,19 +1,20 @@
 import React from "react";
 import { useState } from "react";
-import { authService } from "../fbase";
 import {
   getAuth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
 } from "firebase/auth";
+import "./css/Auth.css";
+import AuthInput from "../components/AuthInput.jsx";
+import AuthSwitch from "../components/AuthSwitch.jsx";
 
 export default function Auth() {
   const auth = getAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [newAccount, setNewAccount] = useState(false);
+  const [error, setError] = useState("");
   const onSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -25,71 +26,40 @@ export default function Auth() {
         alert("로그인 되었습니다. 환영합니다.");
       }
     } catch (error) {
-      console.log(error);
-    }
-  };
-  const onChange = (e) => {
-    const {
-      target: { name, value },
-    } = e;
-    if (name === "email") {
-      setEmail(value);
-    } else if (name === "password") {
-      setPassword(value);
+      if (error.message === "Firebase: Error (auth/email-already-in-use).") {
+        setError("존재하는 이메일입니다.");
+      } else if (error.message === "Firebase: Error (auth/wrong-password).") {
+        setError("비밀번호가 일치하지 않습니다.");
+      } else if (
+        error.message ===
+        "Firebase: Password should be at least 6 characters (auth/weak-password)."
+      ) {
+        setError("비밀번호는 6자 이상이어야 합니다.");
+      } else if (
+        error.message ===
+        "Firebase: Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later."
+      ) {
+        setError(
+          "로그인 시도를 여러번 실패했습니다. 잠시 후 다시 시도해 주세요."
+        );
+      }
     }
   };
 
-  const toggleAccount = () => {
-    setNewAccount((prev) => !prev);
-  };
-  const onSocialClick = () => {
-    let provider = new GoogleAuthProvider();
-    signInWithPopup(authService, provider);
-    localStorage.setItem("userObject", JSON.stringify(provider));
-  };
   return (
-    <div>
-      <form onSubmit={onSubmit}>
-        <input
-          name="email"
-          type="email"
-          placeholder="이메일"
-          required
-          value={email}
-          onChange={onChange}
+    <section className="authContainer">
+      <form className="authForm" onSubmit={onSubmit}>
+        <h1 className="loginText">로그인</h1>
+        <AuthInput
+          email={email}
+          setEmail={setEmail}
+          password={password}
+          setPassword={setPassword}
+          newAccount={newAccount}
         />
-        <input
-          name="password"
-          type="password"
-          placeholder="비밀번호"
-          required
-          value={password}
-          onChange={onChange}
-        />
-        <input
-          type="submit"
-          className="authSubmit"
-          value={newAccount ? "회원가입" : "로그인"}
-        />
+        <div className="authError">{error && <span>{error}</span>}</div>
+        <AuthSwitch newAccount={newAccount} setNewAccount={setNewAccount} />
       </form>
-      <div className="authSwitchContainer">
-        {newAccount ? (
-          <>
-            <span>회원인가요?</span>
-            <span onClick={toggleAccount}>로그인</span>
-          </>
-        ) : (
-          <>
-            <span>처음인가요?</span>
-            <span onClick={toggleAccount}>회원가입</span>
-          </>
-        )}
-      </div>
-      <div>
-        <button onClick={onSocialClick} name="google">
-          구글 로그인
-        </button>
-      </div>
-    </div>
+    </section>
   );
 }
