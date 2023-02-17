@@ -1,3 +1,4 @@
+import "./css/Home.css";
 import React, { useEffect, useState } from "react";
 import { authService } from "../fbase";
 import { Link } from "react-router-dom";
@@ -30,16 +31,13 @@ export default function Home() {
     포항: "Pohang",
     창원: "Changwon",
     진주: "Chinju",
-    제주: "Jeju",
+    제주도: "Jeju",
   };
   const [searched, setSearched] = useState("");
   const onChange = (e) => {
     setCityInput(e.target.value);
   };
   const [searchError, setSearchError] = useState();
-  const [mainData, setMainData] = useState([]);
-  const [mainDataWeather, setMainDataWeather] = useState([]);
-  const [mainDataWeatherText, setMainDataWeatherText] = useState("");
 
   const isCity = () => {
     const isCityName = cityName.hasOwnProperty(cityInput);
@@ -50,7 +48,6 @@ export default function Home() {
     } else {
       setSearched("");
       setCityInput("");
-      setMainDataWeatherText("");
       setSearchError("잘못된 검색입니다.");
     }
   };
@@ -60,42 +57,32 @@ export default function Home() {
       isCity();
     }
   };
-  const onClick = () => {
+  const onClick = (e) => {
     if (cityInput !== "") {
       isCity();
     }
   };
+  const [dataClouds, setDataClouds] = useState([]);
+  const [dataMain, setDataMain] = useState([]);
+  const [dataWeather, setDataWeather] = useState([]);
+  const [dataWind, setDataWind] = useState([]);
 
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${searched}&id=524901&lang=Kr&appid=ba377ee3d7d4e51eeb16cebe61239877`;
   const GetInfo = async () => {
     if (searched !== "") {
-      const Json = await (await fetch(url)).json();
-      const item = Json.main;
-      const itemIcon = Json.weather[0];
-      setMainData(item);
-      setMainDataWeather(itemIcon);
-      if (itemIcon.icon === "01d" || itemIcon.icon === "01n") {
-        setMainDataWeatherText("맑음");
-      } else if (itemIcon.icon === "02d" || itemIcon.icon === "02n") {
-        setMainDataWeatherText("구름 적음");
-      } else if (
-        itemIcon.icon === "03d" ||
-        itemIcon.icon === "03n" ||
-        itemIcon.icon === "04d" ||
-        itemIcon.icon === "04n"
-      ) {
-        setMainDataWeatherText("구름 많음");
-      } else if (itemIcon.icon === "09d" || itemIcon.icon === "09n") {
-        setMainDataWeatherText("소나기");
-      } else if (itemIcon.icon === "10d" || itemIcon.icon === "10n") {
-        setMainDataWeatherText("비");
-      } else if (itemIcon.icon === "11d" || itemIcon.icon === "11n") {
-        setMainDataWeatherText("뇌우");
-      } else if (itemIcon.icon === "13d" || itemIcon.icon === "13n") {
-        setMainDataWeatherText("눈");
-      } else if (itemIcon.icon === "50d" || itemIcon.icon === "50n") {
-        setMainDataWeatherText("안개");
-      }
+      fetch(url)
+        .then(function (res) {
+          if (!res.ok) {
+            throw Error("소스 패치 오류");
+          }
+          return res.json();
+        })
+        .then(function (data) {
+          setDataClouds(data.clouds);
+          setDataMain(data.main);
+          setDataWeather(data.weather[0]);
+          setDataWind(data.wind);
+        });
     }
   };
 
@@ -104,51 +91,60 @@ export default function Home() {
   }, [url]);
 
   return (
-    <div>
-      <span>홈페이지</span>
-      <br />
-      <Link to="/" onClick={onLogOutClick}>
-        로그아웃
-      </Link>
-      <br />
-      <div>
-        <input
-          type="text"
-          placeholder="지역 입력"
-          value={cityInput}
-          onChange={onChange}
-          onKeyDown={handleOnKeyPress}
-        />
-        <input type="button" value="찾기" onClick={onClick} />
-        <br />
+    <section className="homeContainer">
+      <div className="homeLeft">
+        <div className="homeInputBox">
+          <input
+            type="text"
+            placeholder="지역 입력"
+            value={cityInput}
+            onChange={onChange}
+            onKeyDown={handleOnKeyPress}
+          />
+          <input type="button" value="찾기" onClick={onClick} />
+        </div>
+        <div className="searchedInfoDetail">
+          {searchError === "" ? (
+            <div>
+              <span>최대기온 : {(dataMain.temp_max - 273.15).toFixed(1)}</span>
+              <br />
+              <span>최저기온 : {(dataMain.temp_min - 273.15).toFixed(1)}</span>
+              <br />
+              <span>습도 : {dataMain.humidity}%</span>
+              <br />
+              <span>풍속 : {dataWind.speed}km/h</span>
+              <br />
+              <span>구름 : {dataClouds.all}%</span>
+              <br />
+            </div>
+          ) : (
+            <span>{searchError}</span>
+          )}
+        </div>
       </div>
-      <div>
-        <h1>지역 정보</h1>
-        {searchError === "" ? (
-          <div>
-            <span>온도 : {(mainData.temp - 273.15).toFixed(1)}</span>
-            <br />
-            <span>최대기온 : {(mainData.temp_max - 273.15).toFixed(1)}</span>
-            <br />
-            <span>최저기온 : {(mainData.temp_min - 273.15).toFixed(1)}</span>
-            <br />
-            <span>
+      <div className="homeRight">
+        <div className="searchedInfoMain">
+          {searchError === "" ? (
+            <div>
               <img
                 src={
                   searched !== ""
-                    ? `http://openweathermap.org/img/wn/${mainDataWeather.icon}@2x.png`
+                    ? `http://openweathermap.org/img/wn/${dataWeather.icon}@2x.png`
                     : null
                 }
                 alt="이미지 없음"
               />
-            </span>
-            <br />
-            <span>{mainDataWeatherText}</span>
-          </div>
-        ) : (
-          <span>{searchError}</span>
-        )}
+              <br />
+              <span>{dataWeather.description}</span>
+            </div>
+          ) : (
+            <span>{searchError}</span>
+          )}
+        </div>
+        <Link to="/" onClick={onLogOutClick}>
+          로그아웃
+        </Link>
       </div>
-    </div>
+    </section>
   );
 }
