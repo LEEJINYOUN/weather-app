@@ -45,6 +45,7 @@ export default function Home() {
       setSearched(cityName[cityInput]);
       setCityInput("");
       setSearchError("");
+      localStorage.setItem("cityInput", JSON.stringify(cityInput));
     } else {
       setSearched("");
       setCityInput("");
@@ -57,7 +58,7 @@ export default function Home() {
       isCity();
     }
   };
-  const onClick = (e) => {
+  const onClick = () => {
     if (cityInput !== "") {
       isCity();
     }
@@ -85,6 +86,8 @@ export default function Home() {
         });
     }
   };
+
+  let localStorageCityInput = JSON.parse(localStorage.getItem("cityInput"));
 
   useEffect(() => {
     GetInfo();
@@ -126,6 +129,7 @@ export default function Home() {
         <div className="searchedInfoMain">
           {searchError === "" ? (
             <div>
+              <span>{localStorageCityInput}</span>
               <img
                 src={
                   searched !== ""
