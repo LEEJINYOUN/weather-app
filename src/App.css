@@ -3,3 +3,138 @@
   padding: 0;
   box-sizing: border-box;
 }
+
+.mainContainer {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: row;
+  background-image: linear-gradient(rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)),
+    url(./images/default.jpg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  color: white;
+}
+
+.mainLeft {
+  display: flex;
+  flex-direction: column;
+  width: 35%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.mainInputBox {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  padding-top: 30px;
+  width: 100%;
+  height: 40%;
+}
+
+.mainInputBox > input {
+  margin: 0 10px;
+}
+
+.mainInputBox > input[type="text"] {
+  padding-left: 10px;
+  width: 300px;
+  height: 50px;
+  font-size: 18px;
+  outline: none;
+  border: none;
+  background-color: transparent;
+  border-bottom: 1px solid white;
+  color: white;
+  transition: all 0.3s ease-in-out;
+}
+
+.mainInputBox > input[type="text"]:focus {
+  border-bottom: 2px solid gray;
+}
+
+.mainInputBox > input[type="button"] {
+  width: 70px;
+  height: 50px;
+  cursor: pointer;
+  background-color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 15px;
+  color: black;
+}
+
+.mainInfoDetail {
+  width: 100%;
+  height: 60%;
+}
+
+.InfoItems {
+  padding: 0 25px;
+  width: 100%;
+  height: 20%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.mainRight {
+  width: 65%;
+  height: 100%;
+}
+
+.nowDay {
+  width: 100%;
+  height: 200px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  font-size: 40px;
+  font-weight: bolder;
+}
+
+.mainInfo {
+  width: 100%;
+  height: calc(100vh - 200px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.infoBox {
+  width: 600px;
+  height: 200px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+
+.cityTemp,
+.cityName {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 30%;
+  height: 100%;
+  font-size: 50px;
+}
+
+.cityImage {
+  width: 40%;
+  height: 100%;
+}
+
+.errorMessage {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  font-size: 35px;
+}

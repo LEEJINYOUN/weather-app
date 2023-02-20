@@ -2,6 +2,25 @@ import "./App.css";
 import React, { useEffect, useState } from "react";
 
 function App() {
+  const todayTime = () => {
+    let now = new Date();
+    let todayYear = now.getFullYear();
+    let todayMonth =
+      now.getMonth() + 1 > 9 ? now.getMonth() + 1 : "0" + (now.getMonth() + 1);
+    let todayDate = now.getDate() > 9 ? now.getDate() : "0" + now.getDate();
+    const week = ["일", "월", "화", "수", "목", "금", "토"];
+    let dayOfWeek = week[now.getDay()];
+    return (
+      todayYear +
+      ". " +
+      todayMonth +
+      ". " +
+      todayDate +
+      " " +
+      dayOfWeek +
+      "요일"
+    );
+  };
   const [cityInput, setCityInput] = useState("");
   const cityName = {
     서울: "Seoul",
@@ -44,7 +63,7 @@ function App() {
       setSearched("");
       setCityInput("");
       setCitySelected(cityInput);
-      setSearchError("잘못된 검색입니다.");
+      setSearchError("등록되지 않은 지역입니다.");
     }
   };
   const [dataClouds, setDataClouds] = useState({});
@@ -60,12 +79,14 @@ function App() {
     }
   };
 
-  const onClick = (e) => {
-    e.preventDefault();
+  const onClick = () => {
     if (cityInput !== "") {
+      setCitySelected(cityInput);
       isCity();
     }
   };
+
+  const celsius = 273.15;
 
   const url = `https://api.openweathermap.org/data/2.5/weather?q=${searched}&id=524901&lang=Kr&appid=ba377ee3d7d4e51eeb16cebe61239877`;
 
@@ -87,9 +108,9 @@ function App() {
     }
   }, [searched, url]);
   return (
-    <section className="homeContainer">
-      <div className="homeLeft">
-        <div className="homeInputBox">
+    <section className="mainContainer">
+      <div className="mainLeft">
+        <div className="mainInputBox">
           <input
             type="text"
             placeholder="지역 입력"
@@ -99,43 +120,62 @@ function App() {
           />
           <input type="button" value="찾기" onClick={onClick} />
         </div>
-        <div className="searchedInfoDetail">
+        <div className="mainInfoDetail">
           {searchError === "" ? (
-            <div>
-              <span>최대기온 : {(dataMain.temp_max - 273.15).toFixed(1)}</span>
-              <br />
-              <span>최저기온 : {(dataMain.temp_min - 273.15).toFixed(1)}</span>
-              <br />
-              <span>습도 : {dataMain.humidity}%</span>
-              <br />
-              <span>풍속 : {dataWind.speed}km/h</span>
-              <br />
-              <span>구름 : {dataClouds.all}%</span>
-              <br />
-            </div>
+            <>
+              <div className="InfoItems">
+                <span>최대 / 최저 기온</span>
+                <span>
+                  {(dataMain.temp_max - celsius).toFixed(1)}
+                  &nbsp;&#8451;&nbsp;/&nbsp;
+                  {(dataMain.temp_min - celsius).toFixed(1)}&nbsp;&#8451;
+                </span>
+              </div>
+              <div className="InfoItems">
+                <span>습도</span>
+                <span>{dataMain.humidity}%</span>
+              </div>
+              <div className="InfoItems">
+                <span>풍속</span>
+                <span>{dataWind.speed}km/h</span>
+              </div>
+              <div className="InfoItems">
+                <span>구름</span>
+                <span>{dataClouds.all}%</span>
+              </div>
+              <div className="InfoItems">
+                <span>날씨 설명</span>
+                <span>{dataWeather.description}</span>
+              </div>
+            </>
           ) : (
-            <span>{searchError}</span>
+            <span className="errorMessage">{searchError}</span>
           )}
         </div>
       </div>
-      <div className="homeRight">
-        <div className="searchedInfoMain">
+      <div className="mainRight">
+        <div className="nowDay">{todayTime()}</div>
+        <div className="mainInfo">
           {searchError === "" ? (
-            <div>
-              <span>{citySelected}</span>
-              <img
-                src={
-                  searched !== ""
-                    ? `http://openweathermap.org/img/wn/${dataWeather.icon}@2x.png`
-                    : null
-                }
-                alt="이미지 없음"
-              />
-              <br />
-              <span>{dataWeather.description}</span>
-            </div>
+            <>
+              <div className="infoBox">
+                <span className="cityTemp">
+                  {(dataMain.temp - celsius).toFixed(1)}&nbsp;&#8451;
+                </span>
+                <span className="cityName">{citySelected}</span>
+                <img
+                  className="cityImage"
+                  src={
+                    searched !== ""
+                      ? `http://openweathermap.org/img/wn/${dataWeather.icon}@2x.png`
+                      : null
+                  }
+                  alt="이미지 없음"
+                />
+              </div>
+            </>
           ) : (
-            <span>{searchError}</span>
+            <span className="errorMessage">{searchError}</span>
           )}
         </div>
       </div>
