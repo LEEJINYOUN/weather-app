@@ -88,7 +88,7 @@ function App() {
 
   const celsius = 273.15;
 
-  const url = `https://api.openweathermap.org/data/2.5/weather?q=${searched}&id=524901&lang=Kr&appid=ba377ee3d7d4e51eeb16cebe61239877`;
+  const url = `https://api.openweathermap.org/data/2.5/weather?q=${searched}&lang=Kr&appid=ba377ee3d7d4e51eeb16cebe61239877`;
 
   useEffect(() => {
     if (searched !== "") {
@@ -118,7 +118,6 @@ function App() {
             onChange={onChange}
             onKeyDown={handleOnKeyPress}
           />
-          <input type="button" value="찾기" onClick={onClick} />
         </div>
         <div className="mainInfoDetail">
           {searchError === "" ? (
